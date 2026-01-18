@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'accounts',
     'rest_framework',
     'polls',
+    'votes',
 ]
 
 AUTH_USER_MODEL = "accounts.User"

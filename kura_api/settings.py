@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import os
+
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,10 +34,13 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+
+
 # Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
+    'django.contrib.sessions',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.messages',
@@ -42,6 +50,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'polls',
     'votes',
+    'corsheaders',
 ]
 
 AUTH_USER_MODEL = "accounts.User"
@@ -84,11 +93,11 @@ WSGI_APPLICATION = 'kura_api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'kura_api',
-        'HOST': 'localhost',
-        'USER': 'root',
-        'PASSWORD':'Antony123$#',
-        'PORT': '3306',
+        'NAME': os.getenv('NAME'),
+        'HOST': os.getenv('HOST'),
+        'USER': os.getenv('USER'),
+        'PASSWORD':os.getenv('PASSWORD'),
+        'PORT': os.getenv('PORT'),
     }
 }
 

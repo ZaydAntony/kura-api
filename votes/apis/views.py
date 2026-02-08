@@ -4,13 +4,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from polls.models import Poll, Option
 from votes.models import Vote
-from .serializers import VoteSerializer
+from .serializers import voteSerializer
 
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def cast_vote(request):
-    serializer = VoteSerializer(data=request.data)
+    serializer = voteSerializer(data=request.data)
 
     if not serializer.is_valid():
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

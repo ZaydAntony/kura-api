@@ -30,6 +30,12 @@ class Option(models.Model):
         related_name="options"
     )
     text = models.CharField(max_length=255)
-
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["poll", "text"],
+                name="unique_option_per_poll"
+            )
+        ] # unique options per poll 
     def __str__(self):
         return f"{self.text} ({self.poll.title})"

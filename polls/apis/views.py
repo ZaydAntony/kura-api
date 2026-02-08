@@ -8,50 +8,41 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from votes.models import Vote
 from polls.models import Poll,Option
-from .serializers import pollSerializer,optionSerializer
+from .serializers import PollSerializer
 
 
 # Create your views here.
+@api_view(["POST"])
 @permission_classes([IsAdminUser])
-@api_view(['POST'])
-def postPolls(request):
-    polls = Poll.objects.all()
-    serializer = pollSerializer(data= request.data)
-    if serializer.is_valid(): # my validation check
-        serializer.save(createdby=request.user) #Saving the data to db
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+def create_poll(request):
+    serializer = PollSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(createdby=request.user)
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors, status=400)
 
-@api_view(['GET'])
-def getPolls(request):
-    polls = Poll.objects.all()
-    serializer = pollSerializer(polls, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+@api_view(["GET"])
+def list_polls(request):
+    polls = Poll.objects.filter(is_active=True).prefetch_related("options")
+    serializer = PollSerializer(polls, many=True)
+    return Response(serializer.data)
 
-@permission_classes([IsAdminUser])
-@api_view(['POST'])
-def addOptions(request):
-
-    poll_id = request.data.get('poll')
+@api_view(["GET"])
+def poll_detail(request, poll_id):
     try:
-        poll = Poll.objects.get(id=poll_id, is_active=True)
+        poll = Poll.objects.prefetch_related("options").get(
+            id=poll_id,
+            is_active=True
+        )
     except Poll.DoesNotExist:
         return Response(
-            {"error": "Invalid or inactive poll"},
-            status=status.HTTP_400_BAD_REQUEST
+            {"detail": "Poll not found"},
+            status=404
         )
-    serializer = optionSerializer(data=request.data)
 
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    serializer = PollSerializer(poll)
+    return Response(serializer.data)
 
-@api_view(['GET'])
-def getOptions(request):
-    options = Option.objects.all()
-    serializer = optionSerializer(options, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
 
 def generate_ai_summary(poll_title, results):
     prompt = f"""

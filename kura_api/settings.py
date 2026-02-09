@@ -26,15 +26,17 @@ OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-49*v-+u15ajd*cy0+as3nhr=3630visddjsx(xxqfhwyr9uybr'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
 
-
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    ".railway.app",
+]
 
 # Application definition
 
@@ -51,14 +53,25 @@ INSTALLED_APPS = [
     'polls',
     'votes',
     'corsheaders',
+    'drf_spectacular',
 ]
 
 AUTH_USER_MODEL = "accounts.User"
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
+CORS_ALLOW_ALL_ORIGINS = True
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.railway.app",
+]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')#prevents mixed content and login issues
+
+
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -93,11 +106,11 @@ WSGI_APPLICATION = 'kura_api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('NAME'),
-        'HOST': os.getenv('HOST'),
-        'USER': os.getenv('USER'),
-        'PASSWORD':os.getenv('PASSWORD'),
-        'PORT': os.getenv('PORT'),
+        'NAME': os.getenv('MYSQLDATABASE'),
+        'HOST': os.getenv('MYSQLHOST'),
+        'USER': os.getenv('MYSQLUSER'),
+        'PASSWORD':os.getenv('MYSQLPASSWORD'),
+        'PORT': os.getenv('MYSQLPORT'),
     }
 }
 
@@ -135,8 +148,11 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
+# Static files (CSS, JavaScript, Images)
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATIC_URL = 'static/'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -147,6 +163,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 

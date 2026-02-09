@@ -98,7 +98,7 @@ TEMPLATES = [
 ]
 
 # --------------------------------------------------
-# DATABASE (MySQL – Render compatible)
+# DATABASE
 # --------------------------------------------------
 DATABASES = {
     "default": {

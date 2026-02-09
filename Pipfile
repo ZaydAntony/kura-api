@@ -16,6 +16,7 @@ whitenoise = "*"
 djangorestframework = "==3.16.1"
 pyjwt = "==2.11.0"
 requests = "==2.32.5"
+psycopg = {extras = ["binary"], version = "*"}
 
 [dev-packages]
 

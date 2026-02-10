@@ -17,7 +17,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
-from .views import run_migrations
 
 admin.site.site_header = 'Kura Api Admin'
 admin.site.index_title ='Admin'
@@ -26,9 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema")),
-    path('polls/', include('polls.apis.urls')),
     path('auth/', include('accounts.apis.urls')),
     path('votes/', include('votes.apis.urls')),
-    path("run-migrations/", run_migrations),
 
 ]
